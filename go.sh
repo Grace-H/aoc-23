@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Usage: go.sh <day>
+# Usage: go.sh
 
-wget -O input$1 --no-cookies --header "Cookie: $ADVENT_COOKIE"  https://adventofcode.com/2023/day/$1/input
+day=3
 
-export DAY="$1"
+wget -O input$day --no-cookies --header "Cookie: $ADVENT_COOKIE"  https://adventofcode.com/2023/day/$day/input
 
-cp starter.py day$1.py
+cp starter.py day$day.py
