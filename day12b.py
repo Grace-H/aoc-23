@@ -4,18 +4,25 @@ from collections import namedtuple
 from operator import concat
 from functools import reduce
 from queue import LifoQueue
+import re
+import numpy as np
 
 N = namedtuple("N", ["l", "li", "lsum", "p", "pi", "psum"])
 
 def dfs(line):
     count = 0
+    print(line)
     s = LifoQueue()
+
+    # Search for large "boulders"
+    # string = sorted(list(filter(lambda s: s != '', re.split("[?.]", reduce(concat, line[0])))), key=lambda a: len(a))
+    # nums = sorted(line[1])
 
     # Push first node
     i = 0
-    while i < len(line) and line[i] == '.':
+    while i < len(line[0]) and line[0][i] == '.':
         i += 1
-    s.put(N(line[0], i, 0, line[1], 0, sum(line[1])))
+    s.put(N(line[0], i, 0, line[1], 0, sum(line[1]) + len(line[1]) - 1))
 
     while not s.empty():
         n = s.get()
@@ -48,7 +55,7 @@ def dfs(line):
                     count += 1
             else:  # Generate next two nodes
                 # # Node
-                if lpatch + 1 <= n.p[pi] and psum + len(n.p) - pi - 1 - lsum <= len(n.l) - i:
+                if lpatch + 1 <= n.p[pi] and psum - lsum <= len(n.l) - i:
                     l1 = list(n.l)
                     l1[j] = '#'
                     if lpatch == 0:  # start of new patch
@@ -65,13 +72,13 @@ def dfs(line):
                 l1[j] = '.'
                 while i < len(l1) and l1[i] == '.':
                     i += 1
-                if psum + len(n.p) - pi - 1 - lsum > len(l1) - i:
+                if psum - lsum > len(l1) - i:
                     continue
                 s.put(N(l1, i, lsum, n.p, pi, psum))
     return count
 
 filename = "input12"
-filename = "test12"
+# filename = "test12"
 file = open(filename, 'r')
 lines = [l.strip().split(" ") for l in file.readlines()]
 file.close()
@@ -79,9 +86,11 @@ lines = [[((l[0] + '?') * 5)[:-1], ((l[1] + ',') * 5)[:-1]] for l in lines]
 lines = list(map(lambda l: [list(l[0]), list(map(int, l[1].split(",")))], lines))
 
 count = 0
+# print(dfs(lines[5]))
+
 for l in lines:
     total = dfs(l)
     print(total)
     count += total
 
-print(count)
+#print(count)
