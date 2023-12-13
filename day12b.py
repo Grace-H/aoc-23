@@ -24,15 +24,15 @@ def dfs(line):
         j = i
         lpatch = 0
         lsum = n.lsum
+        psum = n.psum
         while j < len(n.l) and n.l[j] != '?' and pi < len(n.p):
-            # print("pi", pi, "j", j, "lpatch", lpatch)
             # Patch completion
             if n.l[j] == '.':
                 if lpatch == n.p[pi]:
                     lsum += lpatch
+                    psum -= lpatch
                     pi += 1
                     lpatch = 0
-                    # print("pi", pi)
                 elif lpatch != 0:
                     break
             else:
@@ -45,35 +45,29 @@ def dfs(line):
                 if lpatch == 0 and pi == len(n.p):
                     count += 1
                 elif pi == len(n.p) - 1 and lpatch == n.p[pi] and pi == len(n.p) - 1:
-                    # # print("here", n.l)
                     count += 1
             else:  # Generate next two nodes
                 # # Node
-                if lpatch + 1 <= n.p[pi] and sum(n.p[pi:]) + len(n.p[pi:]) - 1 - lsum <= len(n.l) - i:
+                if lpatch + 1 <= n.p[pi] and psum + len(n.p) - pi - 1 - lsum <= len(n.l) - i:
                     l1 = list(n.l)
                     l1[j] = '#'
                     if lpatch == 0:  # start of new patch
                         i = j
-                    s.put(N(l1, i, n.lsum, n.p, pi, n.psum))
-                    # print("added #", N(l1, i, n.lsum, n.p, pi, n.psum))
+                    s.put(N(l1, i, lsum, n.p, pi, psum))
                 # . Node
                 # if this completed a patch
-                # # print(n.p[pi])
                 if lpatch == n.p[pi]:
                     lsum += lpatch
-                    # print("incrementing pi to ", pi + 1)
+                    psum -= lpatch
                     pi += 1
                     i = j
                 l1 = list(n.l)
                 l1[j] = '.'
-                # print("j", j, l1[j])
                 while i < len(l1) and l1[i] == '.':
                     i += 1
-                    # print("inc i to ", i, l1)
-                if sum(n.p[pi:]) + len(n.p[pi:]) - 1 - lsum > len(l1) - i:
+                if psum + len(n.p) - pi - 1 - lsum > len(l1) - i:
                     continue
-                s.put(N(l1, i, lsum, n.p, pi, n.psum))
-                # # print("added .", N(l1, i, n.lsum, n.p, pi, n.psum))
+                s.put(N(l1, i, lsum, n.p, pi, psum))
     return count
 
 filename = "input12"
@@ -85,8 +79,6 @@ lines = [[((l[0] + '?') * 5)[:-1], ((l[1] + ',') * 5)[:-1]] for l in lines]
 lines = list(map(lambda l: [list(l[0]), list(map(int, l[1].split(",")))], lines))
 
 count = 0
-# print(lines[0])
-print(dfs(lines[0]))
 for l in lines:
     total = dfs(l)
     print(total)
