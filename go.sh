@@ -9,4 +9,5 @@ wget -O input$day \
 	https://adventofcode.com/2023/day/$day/input
 
 cp starter.py day$day.py
-sed -i "" "s/XX/${day}/g" day${day}.py
+sed -i "" s/XX/${day}/g day${day}.py
+sed -i "" -E s/day=[0-9]\+/day=${day}/ post.sh
